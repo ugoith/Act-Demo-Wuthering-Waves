@@ -1,0 +1,13 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\act\\plugins\\unluaextensions\\luasocket\\source\\src\\unixdgram.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\act\\intermediate\\build\\win64\\x64\\acteditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "e:\\act\\plugins\\unluaextensions\\luasocket\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\luasocket\\definitions.luasocket.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

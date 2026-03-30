@@ -1,0 +1,13 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "e:\\act\\plugins\\unluaextensions\\luaprotobuf\\source\\private\\luaprotobufmodule.cpp",
+        "ProvidedModule": "",
+        "PCH": "e:\\act\\plugins\\unluaextensions\\luaprotobuf\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\luaprotobuf\\pch.luaprotobuf.h.pch",
+        "Includes": [
+            "e:\\act\\plugins\\unluaextensions\\luaprotobuf\\source\\src\\pb.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

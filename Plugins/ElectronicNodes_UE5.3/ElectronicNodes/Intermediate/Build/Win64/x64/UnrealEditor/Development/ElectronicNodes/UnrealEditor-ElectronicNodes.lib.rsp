@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-ElectronicNodes.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Act\Intermediate\Build\Win64\x64\ActEditor\Development\UnrealEd\SharedPCH.UnrealEd.Cpp20.h.obj"
+"E:\Act\Plugins\ElectronicNodes_UE5.3\ElectronicNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\ElectronicNodes\Module.ElectronicNodes.cpp.obj"
+"E:\Act\Plugins\ElectronicNodes_UE5.3\ElectronicNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\ElectronicNodes\Default.rc2.res"
+/OUT:"E:\Act\Plugins\ElectronicNodes_UE5.3\ElectronicNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\ElectronicNodes\UnrealEditor-ElectronicNodes.lib"

@@ -1,0 +1,16 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-LuaRapidjson.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Act\Intermediate\Build\Win64\x64\ActEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\LuaRapidjsonModule.cpp.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\Document.cpp.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\rapidjson.cpp.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\Schema.cpp.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\values.cpp.obj"
+"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\Default.rc2.res"
+/OUT:"E:\Act\Plugins\UnLuaExtensions\LuaRapidjson\Intermediate\Build\Win64\x64\UnrealEditor\Development\LuaRapidjson\UnrealEditor-LuaRapidjson.lib"
