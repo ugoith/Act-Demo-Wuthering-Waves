@@ -13,4 +13,5 @@ UCLASS()
 class ACT_API UActGameplayAbilityBase : public UGameplayAbility
 {
 	GENERATED_BODY()
+	
 };
