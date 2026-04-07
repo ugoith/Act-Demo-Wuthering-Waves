@@ -21,7 +21,9 @@ void AActCharacterBase::BeginPlay()
 	Super::BeginPlay();
 	for (const TObjectPtr<USceneComponent>& ChildComponent : GetMesh()->GetAttachChildren())
 	{
-		Cast<USkeletalMeshComponent>(ChildComponent)->SetLeaderPoseComponent(GetMesh());
+		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(ChildComponent);
+		if (SkeletalMeshComponent->GetAnimInstance()) continue;
+		SkeletalMeshComponent->SetLeaderPoseComponent(GetMesh(),true,true);
 	}
 }
 
