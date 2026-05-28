@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "LuaPanda-Attach (UE)",
+            "cwd": "${workspaceFolder}",
+            "connectionPort": 8818,
+            "stopOnEntry": false,
+            "useCHook": true,
+            "autoPathMode": true,
+            "distinguishSameNameFile": true,
+            "sourceMaps": {}
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"e:/Act/Content/Script/.vscode\")"
+    ],
+    "additionalDirectories": [
+      "e:\\Act\\Content\\Script"
+    ]
+  }
+}

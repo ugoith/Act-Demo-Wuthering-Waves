@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"name": "Script",
+			"path": "."
+		},
+		{
+			"name": "IntelliSense",
+			"path": "../../Plugins/UnLua/Intermediate/IntelliSense"
+		}
+	]
+}

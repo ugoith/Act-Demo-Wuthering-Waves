@@ -13,4 +13,6 @@ UCLASS()
 class ACT_API UActAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+public:
+	
 };

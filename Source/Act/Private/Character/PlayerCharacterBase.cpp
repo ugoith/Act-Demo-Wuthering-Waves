@@ -4,8 +4,11 @@
 #include "Act/Public/Character/PlayerCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AnimInstance/ActAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/ActHUD.h"
+#include "Game/ActPlayerController.h"
 #include "Game/ActPlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,6 +18,8 @@
 APlayerCharacterBase::APlayerCharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	TeamID = 0;
+	
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(GetCapsuleComponent());
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("Camera");
@@ -59,17 +64,30 @@ void APlayerCharacterBase::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	//客户端
-	GetPlayerState<AActPlayerState>()->GetAbilitySystemComponent()->InitAbilityActorInfo(GetPlayerState(),this);
+	InitAbiltityActorInfo();
 }
 
 void APlayerCharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	if (!HasAuthority()) return;
-	//服务器
-	AActPlayerState* PS = GetPlayerState<AActPlayerState>();
-	if (!PS) return;
-	PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS,this);
+	InitAbiltityActorInfo();
+}
+
+void APlayerCharacterBase::InitAbiltityActorInfo()
+{
+	AActPlayerState* ActPlayerState = GetPlayerState<AActPlayerState>();
+	if (!ActPlayerState) return;
+	UAbilitySystemComponent* ASC = ActPlayerState->AbilitySystemComponent;
+	if (!ASC) return;
+	ASC->InitAbilityActorInfo(ActPlayerState,this);
+	AbilitySystemCompHasSet.Broadcast(ASC);
+	AActPlayerController* PlayerController = Cast<AActPlayerController>(GetController());
+	if (!PlayerController) return;
+	InitializeEffectsToSelf();
+	AActHUD* HUD = Cast<AActHUD>(PlayerController->GetHUD());
+	if (!HUD) return;
+	HUD->InitWidget(PlayerController,ActPlayerState,this,ASC,ActPlayerState->AttributeSet);
 	
 }
 

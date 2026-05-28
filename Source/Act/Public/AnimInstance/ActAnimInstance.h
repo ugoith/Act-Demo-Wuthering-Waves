@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
 #include "ActAnimInstance.generated.h"
 
+struct FGameplayTagContainer;
+class UAbilitySystemComponent;
 /**
  * 
  */
@@ -22,4 +26,35 @@ UCLASS()
 class ACT_API UActAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+public:
+	
+	void SetOwnerAbilitySystemComponent(UAbilitySystemComponent* InASC);
+
+
+protected:
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	APawn* OwnerPawn;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComp;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	FGameplayTagContainer OwnedGameplayTags;
+	virtual void NativeInitializeAnimation() override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	FORCEINLINE void UpdateOwnerGameplayTags(const FGameplayTag OperateTag, int32 NewCount)
+	{
+		if (NewCount == 0)
+		{
+			OwnedGameplayTags.RemoveTag(OperateTag);
+		}
+		else
+		{
+			OwnedGameplayTags.AddTag(OperateTag);
+		}
+		/*if (OwnerAbilitySystemComp)
+		{
+			OwnerAbilitySystemComp->GetOwnedGameplayTags(OwnedGameplayTags);
+		}*/
+	}
 };

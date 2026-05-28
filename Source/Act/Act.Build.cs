@@ -11,12 +11,13 @@ public class Act : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore",
-			"GameplayAbilities" ,"GameplayTasks","GameplayTags","EnhancedInput"
+			"GameplayAbilities" ,"GameplayTasks","GameplayTags","EnhancedInput","MotionWarping"
+			,"UMG","Slate", "SlateCore","AIModule", "ProceduralMeshComponent"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{  
-			"UnLua", "Lua" 
+			"UnLua", "Lua", "ProceduralMeshComponent"
 		});
 
 		// Uncomment if you are using Slate UI

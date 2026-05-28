@@ -6,6 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "PlayMontageAndWaitWithChildren.generated.h"
 
+class UAnimComponent;
 /**
  * 
  */
@@ -15,6 +16,9 @@ class ACT_API UPlayMontageAndWaitWithChildren : public UAbilityTask
 {
 	GENERATED_BODY()public:
 
+	/*UPROPERTY()
+	TObjectPtr<UAnimComponent> AnimComponent;*/
+	
 	UPROPERTY(BlueprintAssignable)
 	FMontageWaitSimpleDelegate	OnCompleted;
 
@@ -99,10 +103,29 @@ protected:
 
 	UPROPERTY()
 	bool bAllowInterruptAfterBlendOut;
-	 
-	void PlayMontageWithSubSkeletalMesh() const;
-	
-	void  GetChildrenAnimInstance(TArray<UAnimInstance*>& AnimInstances) const ;
-	
+
+	void PlayMontageWithSubSkeletalMesh();
+
+	void GetChildrenAnimInstance(TArray<UAnimInstance*>& AnimInstances) const;
+
 	void MontageStopWithChildren(float OverrideBlendOutTime = -1);
+
+private:
+	/** Server: Play montage with children on server */
+	UFUNCTION(Server, Reliable)
+	void ServerPlayMontageWithChildren();
+
+	/** Multicast: Notify all clients to play montage with children */
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayMontageWithChildren();
+
+	/** Multicast: Notify all clients to stop montage with children */
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastStopMontageWithChildren(float OverrideBlendOutTime = -1);
+
+	/** Implementation of playing montage with children (no network check) */
+	void PlayMontageWithSubSkeletalMesh_Impl();
+
+	/** Implementation of stopping montage with children (no network check) */
+	void MontageStopWithChildren_Impl(float OverrideBlendOutTime = -1);
 };

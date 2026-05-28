@@ -102,7 +102,7 @@ UPlayMontageAndWaitWithChildren* UPlayMontageAndWaitWithChildren::CreatePlayMont
 	MyObj->bStopWhenAbilityEnds = bStopWhenAbilityEnds;
 	MyObj->bAllowInterruptAfterBlendOut = bAllowInterruptAfterBlendOut;
 	MyObj->StartTimeSeconds = StartTimeSeconds;
-	
+	//MyObj->AnimComponent = Cast<UAnimComponent>(OwningAbility->GetAvatarActorFromActorInfo()->GetComponentByClass(UAnimComponent::StaticClass()));
 	return MyObj;
 }
 
@@ -121,9 +121,20 @@ void UPlayMontageAndWaitWithChildren::Activate()
 		UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
+			AActor* OwnerActor = ActorInfo->AvatarActor.Get();
+			
 			if (ASC->PlayMontage(Ability, Ability->GetCurrentActivationInfo(), MontageToPlay, Rate, StartSection, StartTimeSeconds) > 0.f)
 			{
-				PlayMontageWithSubSkeletalMesh();
+				// Network: Play montage with children
+					PlayMontageWithSubSkeletalMesh();
+				
+				/*if (OwnerActor && OwnerActor->GetLocalRole() == ROLE_Authority)
+				{
+					// Server: Play locally and multicast to all clients
+					PlayMontageWithSubSkeletalMesh_Impl();
+					MulticastPlayMontageWithChildren();
+				}*/
+
 				// Playing a montage could potentially fire off a callback into game code which could kill this ability! Early out if we are  pending kill.
 				if (ShouldBroadcastAbilityTaskDelegates() == false)
 				{
@@ -143,7 +154,7 @@ void UPlayMontageAndWaitWithChildren::Activate()
 								  (Character->GetLocalRole() == ROLE_AutonomousProxy && Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted)))
 				{
 					Character->SetAnimRootMotionTranslationScale(AnimRootMotionTranslationScale);
-					
+
 				}
 
 				bPlayedMontage = true;
@@ -242,13 +253,32 @@ bool UPlayMontageAndWaitWithChildren::StopPlayingMontage()
 	return false;
 }
 
-void UPlayMontageAndWaitWithChildren::PlayMontageWithSubSkeletalMesh() const
+void UPlayMontageAndWaitWithChildren::PlayMontageWithSubSkeletalMesh()
+{
+	if (!Ability) return;
+
+	AActor* OwnerActor = Ability->GetAvatarActorFromActorInfo();
+	if (!OwnerActor || !OwnerActor->HasAuthority())
+	{
+		// Client: Send to server
+		ServerPlayMontageWithChildren();
+		return;
+	}
+
+	// Server: Play locally and multicast to all clients
+	PlayMontageWithSubSkeletalMesh_Impl();
+	MulticastPlayMontageWithChildren();
+}
+
+void UPlayMontageAndWaitWithChildren::PlayMontageWithSubSkeletalMesh_Impl()
 {
 	TArray<UAnimInstance*> SubAnimInstances;
 	GetChildrenAnimInstance(SubAnimInstances);
 	for (UAnimInstance* SubComponentAnimIns : SubAnimInstances)
 	{
-		if (SubComponentAnimIns->Montage_Play(MontageToPlay,Rate,EMontagePlayReturnType::MontageLength,StartTimeSeconds) > 0 )
+		if (!SubComponentAnimIns) continue;
+
+		if (SubComponentAnimIns->Montage_Play(MontageToPlay, Rate, EMontagePlayReturnType::MontageLength, StartTimeSeconds) > 0)
 		{
 			if (StartSection != NAME_None)
 			{
@@ -258,16 +288,35 @@ void UPlayMontageAndWaitWithChildren::PlayMontageWithSubSkeletalMesh() const
 	}
 }
 
-void UPlayMontageAndWaitWithChildren::GetChildrenAnimInstance(TArray<UAnimInstance*>& AnimInstances) const 
+void UPlayMontageAndWaitWithChildren::ServerPlayMontageWithChildren_Implementation()
+{
+	// Server: Play locally and multicast to all clients
+	PlayMontageWithSubSkeletalMesh_Impl();
+	MulticastPlayMontageWithChildren();
+}
+
+void UPlayMontageAndWaitWithChildren::MulticastPlayMontageWithChildren_Implementation()
+{
+	// Local implementation for all clients
+	/*UE_LOG(LogTemp, Warning, TEXT("Multicast RPC reached!"));*/
+	PlayMontageWithSubSkeletalMesh_Impl();
+}
+
+void UPlayMontageAndWaitWithChildren::GetChildrenAnimInstance(TArray<UAnimInstance*>& AnimInstances) const
 {
 	AnimInstances.Reset();
+	if (!Ability) return;
+
 	TArray<USceneComponent*> SceneComponents;
-	Ability->GetActorInfo().SkeletalMeshComponent->GetChildrenComponents(false,SceneComponents);
-	for (USceneComponent* SceneComponent : SceneComponents)
+	if (Ability->GetActorInfo().SkeletalMeshComponent.IsValid())
 	{
-		USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SceneComponent);
-		if (!SkeletalMeshComponent || !SkeletalMeshComponent->GetAnimInstance())	continue;
-		AnimInstances.Add(SkeletalMeshComponent->GetAnimInstance());
+		Ability->GetActorInfo().SkeletalMeshComponent->GetChildrenComponents(false, SceneComponents);
+		for (USceneComponent* SceneComponent : SceneComponents)
+		{
+			USkeletalMeshComponent* SkeletalMeshComponent = Cast<USkeletalMeshComponent>(SceneComponent);
+			if (!SkeletalMeshComponent || !SkeletalMeshComponent->GetAnimInstance())	continue;
+			AnimInstances.Add(SkeletalMeshComponent->GetAnimInstance());
+		}
 	}
 }
 
@@ -275,15 +324,45 @@ void UPlayMontageAndWaitWithChildren::MontageStopWithChildren(float OverrideBlen
 {
 	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
 	if (!ASC) return;
-	UAnimMontage* CurrentMontage  = ASC->GetCurrentMontage();
+	UAnimMontage* CurrentMontage = ASC->GetCurrentMontage();
 	if (!CurrentMontage) return;
+
+	if (!Ability) return;
+
+	AActor* OwnerActor = Ability->GetAvatarActorFromActorInfo();
+	if (!OwnerActor) return;
+
+	// Network: Multicast to all clients
+	if (OwnerActor->GetLocalRole() == ROLE_Authority)
+	{
+		MontageStopWithChildren_Impl(OverrideBlendOutTime);
+		MulticastStopMontageWithChildren(OverrideBlendOutTime);
+	}
+}
+
+void UPlayMontageAndWaitWithChildren::MontageStopWithChildren_Impl(float OverrideBlendOutTime)
+{
+	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
+	if (!ASC) return;
+	UAnimMontage* CurrentMontage = ASC->GetCurrentMontage();
+	if (!CurrentMontage) return;
+
 	TArray<UAnimInstance*> SubAnimInstances;
 	GetChildrenAnimInstance(SubAnimInstances);
 	for (UAnimInstance* SubComponentAnimIns : SubAnimInstances)
 	{
-		if (!SubComponentAnimIns->Montage_GetIsStopped(CurrentMontage))	
-		SubComponentAnimIns->Montage_Stop(OverrideBlendOutTime >= 0.0f ? OverrideBlendOutTime : CurrentMontage->BlendOut.GetBlendTime());
+		if (!SubComponentAnimIns) continue;
+		if (!SubComponentAnimIns->Montage_GetIsStopped(CurrentMontage))
+		{
+			SubComponentAnimIns->Montage_Stop(OverrideBlendOutTime >= 0.0f ? OverrideBlendOutTime : CurrentMontage->BlendOut.GetBlendTime());
+		}
 	}
+}
+
+void UPlayMontageAndWaitWithChildren::MulticastStopMontageWithChildren_Implementation(float OverrideBlendOutTime)
+{
+	// Local implementation for all clients
+	MontageStopWithChildren_Impl(OverrideBlendOutTime);
 }
 
 

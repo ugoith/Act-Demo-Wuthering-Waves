@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "ActCharacterBase.h"
 #include "EnemyCharacterBase.generated.h"
-class UAbilitySystemComponent;
-class UAttributeSet;
+class UActAbilitySystemComponent;
+class UActAttributeSet;
 
 UCLASS()
 class ACT_API AEnemyCharacterBase : public AActCharacterBase
@@ -18,13 +18,16 @@ public:
 	AEnemyCharacterBase();
 	//交给服务器进行处理，将结果返回即可
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AbilitySystem")
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<UActAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "AbilitySystem");
-	TObjectPtr<UAttributeSet> AttributeSet;
+	TObjectPtr<UActAttributeSet> AttributeSet;
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 public:
 	// Called every frame
@@ -32,6 +35,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void InitAbiltityActorInfo() override;
 };

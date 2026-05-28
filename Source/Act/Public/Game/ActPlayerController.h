@@ -3,40 +3,56 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "ActPlayerController.generated.h"
-
+struct FTriggerEventNeedTriggerAbilities;
+struct FGameplayTagContainer;
+class UGameplayAbility;
+class UCharacterMovementComponent;
 struct FInputActionValue;
-class UInputAction;
 class UInputMappingContext;
+class UControllerInputConfig;
 /**
  * 
  */
+
+
 UCLASS()
 class ACT_API AActPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	
 	virtual void SetupInputComponent() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> InputMappingContext;
-
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Input")
-	TObjectPtr<UInputAction> IA_Move;
+	TObjectPtr<UControllerInputConfig> ControllerInputConfig;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Jump;
-
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Camera;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "ControlledPawnInfo")
+	TObjectPtr<UCharacterMovementComponent> ControlledCharacterMovementComponent;
+	
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<ACharacter> ControlledCharacter;
 
 public:
-	
+	virtual void AcknowledgePossession(class APawn* P) override;
 	void AddMovementInput(const FInputActionValue& Value);
 	void AddJumpInput(const FInputActionValue& Value);
 	void AddCameraInput(const FInputActionValue& Value);
 	void AddJumpInput_Complete(const FInputActionValue& Value);
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void BindInputActionEvents(UEnhancedInputComponent* EnhancedInputComponent);
+	void TryActivateAbilities(const FGameplayTagContainer& TagsToActivate,const TArray<TSubclassOf<UGameplayAbility>>& GameplayAbilities);
+	void HandleTriggeredInput(const FInputActionValue& Value,const FTriggerEventNeedTriggerAbilities TriggerEventConfig);
+	
+
+protected:
+	
+private:
+	
 	
 };

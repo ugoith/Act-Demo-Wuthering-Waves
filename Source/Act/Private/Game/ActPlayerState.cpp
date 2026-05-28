@@ -5,12 +5,13 @@
 
 #include "AbilitySystem/ActAbilitySystemComponent.h"
 #include "AbilitySystem/ActAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 AActPlayerState::AActPlayerState()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UActAbilitySystemComponent>(FName("AbilitySystemComponent"));
 	AttributeSet = CreateDefaultSubobject<UActAttributeSet>(FName("AttributeSet"));
-
+	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	NetUpdateFrequency = 100.f;;
 }

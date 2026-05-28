@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerState.h"
 #include "ActPlayerState.generated.h"
 
+class UActAbilitySystemComponent;
+class UActAttributeSet;
 class UAttributeSet;
 /**
  * 
@@ -17,11 +19,11 @@ class ACT_API AActPlayerState : public APlayerState,public IAbilitySystemInterfa
 	GENERATED_BODY()
 public:
 	AActPlayerState();
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AbilitySystem")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category = "AbilitySystem")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = "AbilitySystem");
-	TObjectPtr<UAttributeSet> AttributeSet;
-
+	TObjectPtr<UActAttributeSet> AttributeSet;
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 };

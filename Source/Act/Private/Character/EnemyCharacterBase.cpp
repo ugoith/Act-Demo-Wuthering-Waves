@@ -13,6 +13,11 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UActAbilitySystemComponent>(FName("AbilitySystemComponent"));
 	AttributeSet = CreateDefaultSubobject<UActAttributeSet>(FName("AttributeSet"));
+	
+	SetReplicates(true);
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	TeamID = 1;
 }
 
 // Called when the game starts or when spawned
@@ -20,6 +25,14 @@ void AEnemyCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AEnemyCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (!HasAuthority()) return;
+	InitializeEffectsToSelf();
+	InitAbiltityActorInfo();
 }
 
 // Called every frame
@@ -37,5 +50,12 @@ void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInput
 UAbilitySystemComponent* AEnemyCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AEnemyCharacterBase::InitAbiltityActorInfo()
+{
+	if (!AbilitySystemComponent) return;
+	AbilitySystemComponent->InitAbilityActorInfo(this,this);
+	
 }
 

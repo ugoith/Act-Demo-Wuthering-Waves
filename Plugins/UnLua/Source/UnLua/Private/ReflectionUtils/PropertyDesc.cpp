@@ -362,7 +362,7 @@ public:
 #if ENABLE_TYPE_CHECK == 1
             if (Object)
             {
-                if (!Object->GetClass()->IsChildOf(ObjectBaseProperty->PropertyClass))
+               if (!Object->GetClass()->IsChildOf(ObjectBaseProperty->PropertyClass))
                 {
                     UNLUA_LOGERROR(L, LogUnLua, Warning, TEXT("Invalid value type : property.type=%s, value.type=%s"), *ObjectBaseProperty->PropertyClass->GetName(), *Object->GetClass()->GetName());
                 }
