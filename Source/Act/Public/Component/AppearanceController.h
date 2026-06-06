@@ -21,7 +21,9 @@ struct FAppearanceChangeConfigWhenTagChange
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGameplayTag,bool> MeshesVisibilityConfig;
 };
-
+/*
+ * 处理表现向的逻辑，与游戏实际逻辑无关，武器或人物装别显隐藏、顿帧等
+ */
 UCLASS(ClassGroup=(AppearanceComponent),BlueprintType,Blueprintable, meta=(BlueprintSpawnableComponent))
 class ACT_API UAppearanceController : public UActorComponent
 {

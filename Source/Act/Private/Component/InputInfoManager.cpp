@@ -50,7 +50,7 @@ void UInputInfoManager::UpdatePreInput(FGameplayTag TagToSet)
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("PreInputTagMessage : %s"),Targe));
 	if (!bCanPreInput) return;
 	
-	if (!PreInputTagConsumed.Contains(TagToSet))
+	if (PreInputTagConsumed.IsEmpty() || !PreInputTagConsumed.Contains(TagToSet))
 	{
 		PreInputTagConsumed.Add(TagToSet,false);
 		PreInputTag = TagToSet;

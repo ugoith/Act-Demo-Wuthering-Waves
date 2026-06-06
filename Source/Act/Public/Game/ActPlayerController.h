@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/PlayerController.h"
 #include "ActPlayerController.generated.h"
+class UAbilitySystemComponent;
 struct FTriggerEventNeedTriggerAbilities;
 struct FGameplayTagContainer;
 class UGameplayAbility;
@@ -49,7 +51,12 @@ public:
 	void TryActivateAbilities(const FGameplayTagContainer& TagsToActivate,const TArray<TSubclassOf<UGameplayAbility>>& GameplayAbilities);
 	void HandleTriggeredInput(const FInputActionValue& Value,const FTriggerEventNeedTriggerAbilities TriggerEventConfig);
 	
-
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	FORCEINLINE UAbilitySystemComponent* GetControlledPawnAbilitySystemComponent()
+	{
+		if (!GetPawn()) return nullptr;
+		return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn());
+	}
 protected:
 	
 private:

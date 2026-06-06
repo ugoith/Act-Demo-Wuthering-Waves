@@ -38,7 +38,7 @@ void UAnimNotifyState_SetTimeDilation::SetTimeDilation(UActorComponent* ActorCom
 			QueryParams.AddIgnoredActor(Owner);
 			QueryParams.bTraceComplex = false;
 			QueryParams.bDebugQuery = bDebug;
-			bool bIsHit = GetWorld()->SweepMultiByObjectType(HitResults,Owner->GetActorLocation(),Owner->GetActorLocation(),FQuat(),
+			bool bIsHit = Owner->GetWorld()->SweepMultiByObjectType(HitResults,Owner->GetActorLocation(),Owner->GetActorLocation(),FQuat(),
 				ObjectParams,FCollisionShape::MakeSphere(ScopeOfAffection),QueryParams);
 			if (!bIsHit) break;
 			for (FHitResult& Hit : HitResults)
@@ -88,8 +88,8 @@ void UAnimNotifyState_SetTimeDilation::NotifyBegin(USkeletalMeshComponent* MeshC
 	if (UActBlueprintFunctionLibrary::QueryTargetActorOwnedTags(MeshComp->GetOwner(),QueryOwnedTags))
 	{
 		SetTimeDilation(MeshComp);
-		Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	}
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 }
 
 void UAnimNotifyState_SetTimeDilation::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

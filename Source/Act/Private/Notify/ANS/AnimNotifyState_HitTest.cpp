@@ -22,7 +22,13 @@ void UAnimNotifyState_HitTest::NotifyTick(USkeletalMeshComponent* MeshComp, UAni
 	if (HitTestConfig.bDrawPreview)
 	{
 #if WITH_EDITOR
-		UActBlueprintFunctionLibrary::DebugFromShapeType(MeshComp, HitTestConfig, 0.0334f);
+		if (UWorld* World = MeshComp->GetWorld())
+		{
+			if (World->WorldType == EWorldType::EditorPreview)
+			{
+				UActBlueprintFunctionLibrary::DebugFromShapeType(MeshComp, HitTestConfig, 0.0334f);
+			}
+		}
 #endif
 	}
 	

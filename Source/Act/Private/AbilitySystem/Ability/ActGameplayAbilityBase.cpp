@@ -5,7 +5,6 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "ActGameplayTags.h"
 #include "BlueprintGameplayTagLibrary.h"
 #include "BlueprintFunctionLibrary/ActBlueprintFunctionLibrary.h"
 #include "GameFramework/Character.h"
@@ -97,6 +96,33 @@ bool UActGameplayAbilityBase::QueryAvatarActorOwnedTags(FGameplayTagQuery Query)
 	FGameplayTagContainer OwnedGameplayTags;
 	GetAvatarActorOwnedGameplayTags(OwnedGameplayTags);
 	return UBlueprintGameplayTagLibrary::IsTagQueryEmpty(Query) || UBlueprintGameplayTagLibrary::DoesContainerMatchTagQuery(OwnedGameplayTags,Query);
+}
+
+bool UActGameplayAbilityBase::TryActivateAvatarAbilityByClass(TSubclassOf<UGameplayAbility> AbilityToActivate,bool bAllowRemoteActivation)
+{
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+	if (!AbilitySystemComponent) return false;
+	return AbilitySystemComponent->TryActivateAbilityByClass(AbilityToActivate,bAllowRemoteActivation);
+}
+
+bool UActGameplayAbilityBase::TryActivateAvatarAbilityByTag(const FGameplayTagContainer& GameplayTagContainer,
+	bool bAllowRemoteActivation)
+{
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+	if (!AbilitySystemComponent) return false;
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTagContainer,bAllowRemoteActivation);
+}
+
+bool UActGameplayAbilityBase::VerifyLastInputValidate(FVector& LastInputVector)
+{
+	LastInputVector = FVector();
+	
+	if (UCharacterMovementComponent* MovementComp = GetAvatarActorMovementComponent())
+	{
+		LastInputVector = MovementComp->GetLastInputVector();
+	}
+	
+	return !LastInputVector.IsNearlyZero();
 }
 
 

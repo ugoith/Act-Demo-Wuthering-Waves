@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "BlueprintGameplayTagLibrary.h"
 #include "Abilities/GameplayAbility.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ActGameplayAbilityBase.generated.h"
 
 enum class ECompareOperationEnum : uint8;
@@ -63,6 +64,7 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Replicated)
 	TArray<FAttributeInspector> AttributeInspector;
 	
+	
 protected:
 	UFUNCTION(BlueprintCallable,meta = (ExpandEnumAsExecs = "CastResult"))
 	ACharacter* GetAndCastAbilityOwnerCharacter(ECastResult& CastResult);
@@ -84,5 +86,22 @@ public:
 	virtual bool DoesAbilitySatisfyTagRequirements(const UAbilitySystemComponent& AbilitySystemComponent, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	bool  QueryAvatarActorOwnedTags(FGameplayTagQuery Query);
+	
+protected:
+	
+	UFUNCTION(BlueprintCallable)
+	bool TryActivateAvatarAbilityByClass(TSubclassOf<UGameplayAbility> AbilityToActivate,bool bAllowRemoteActivation = true);
+
+	UFUNCTION(BlueprintCallable)
+	bool TryActivateAvatarAbilityByTag(const FGameplayTagContainer& GameplayTagContainer, bool bAllowRemoteActivation = true);
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	FORCEINLINE UCharacterMovementComponent* GetAvatarActorMovementComponent()
+	{
+		return Cast<UCharacterMovementComponent>(GetAvatarActorComponentByClass(UCharacterMovementComponent::StaticClass()));
+	}
+	
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	bool VerifyLastInputValidate(FVector& LastInputVector);
 	
 };

@@ -6,16 +6,13 @@
 #include "AbilitySystemInterface.h"
 #include "ActGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
-#include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystem/Ability/ActGameplayAbilityBase.h"
 #include "Character/ActCharacterBase.h"
 #include "Component/InputInfoManager.h"
 #include "Data/DataAsset/ControllerInputConfig.h"
-#include "Evaluation/IMovieSceneEvaluationHook.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Net/UnrealNetwork.h"
 
 void AActPlayerController::SetupInputComponent()
 {
@@ -169,21 +166,29 @@ void AActPlayerController::TryActivateAbilities(const FGameplayTagContainer& Tag
 
 void AActPlayerController::HandleTriggeredInput(const FInputActionValue& Value,const FTriggerEventNeedTriggerAbilities TriggerEventConfig)
 {
-	
-	UInputInfoManager* InputMgr = Cast<UInputInfoManager>(GetComponentByClass(UInputInfoManager::StaticClass()));
+	if (!GetPawn()) return;
+	UInputInfoManager* InputMgr = Cast<UInputInfoManager>(GetPawn()->GetComponentByClass(UInputInfoManager::StaticClass()));
 	if (InputMgr)
 	{
-		if (TriggerEventConfig.TriggerEvent == ETriggerEvent::Canceled || TriggerEventConfig.TriggerEvent == ETriggerEvent::Completed)
+		if (TriggerEventConfig.TriggerEvent == ETriggerEvent::Completed)
 		{
 			InputMgr->ResetAllParams();
 		}
+		else if (TriggerEventConfig.TriggerEvent == ETriggerEvent::Canceled)
+		{
+			InputMgr->PreInputTagConsumed.Empty();
+			//InputMgr->PreInputTagConsumed.Reset();
+		}
 		else
 		{
+			if (TriggerEventConfig.PreInputTagToSend.IsValid())
 			InputMgr->UpdatePreInput(TriggerEventConfig.PreInputTagToSend);
+			GEngine->AddOnScreenDebugMessage(0,GetWorld()->GetDeltaSeconds(),FColor::Red,
+				FString("ActPlayerController: PreInputTagToSend : ") + TriggerEventConfig.PreInputTagToSend.ToString());
 		}
 	}
 	
 	if (TriggerEventConfig.AbilitiesToTrigger.IsEmpty() && TriggerEventConfig.AbilitiesTags.IsEmpty()) return;
-	if (!GetPawn()) return;
+
 	TryActivateAbilities(TriggerEventConfig.AbilitiesTags, TriggerEventConfig.AbilitiesToTrigger);
 }
