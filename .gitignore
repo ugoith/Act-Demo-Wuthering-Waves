@@ -72,3 +72,11 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# UnLua 的 CMake 构建产物（Lua.Build.cs 在缺少预编译库时会现场生成）
+Plugins/UnLua/Source/ThirdParty/Lua/**/build/
+
+# UnLua 预编译 Lua 库：.gitattributes 中 *.dll/*.lib 走 LFS（本意即入库），
+# 但上面的通用忽略规则会把它们排除，导致缺失时构建回退到 CMake 并失败
+!Plugins/UnLua/Source/ThirdParty/Lua/**/*.dll
+!Plugins/UnLua/Source/ThirdParty/Lua/**/*.lib
