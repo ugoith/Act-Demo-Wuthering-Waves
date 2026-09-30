@@ -72,6 +72,9 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+.idea
+.claude/skills
+*.md
 
 # UnLua 的 CMake 构建产物（Lua.Build.cs 在缺少预编译库时会现场生成）
 Plugins/UnLua/Source/ThirdParty/Lua/**/build/

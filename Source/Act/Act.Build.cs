@@ -12,7 +12,7 @@ public class Act : ModuleRules
 		{
 			"Core", "CoreUObject", "Engine", "InputCore",
 			"GameplayAbilities" ,"GameplayTasks","GameplayTags","EnhancedInput","MotionWarping"
-			,"UMG","Slate", "SlateCore","AIModule", "ProceduralMeshComponent"
+			,"UMG","Slate", "SlateCore","AIModule", "ProceduralMeshComponent","JsEnv","Puerts"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] 

@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TArray<TSubclassOf<UGameplayAbility>> Actions;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	bool bTest = true;
 
 	bool bIsProcessing = false;

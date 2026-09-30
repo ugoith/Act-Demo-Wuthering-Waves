@@ -21,7 +21,7 @@ public:
 	static UAbilityAsync_WaitGameplayTagChange* WaitGameplayTagChangeToActor(AActor* TargetActor, FGameplayTag Tag, bool OnlyTriggerOnce=false);
 	
 	virtual void GameplayTagCallback(const FGameplayTag Tag, int32 NewCount) override;
-	
+	//UPROPERTY(BlueprintAssignable)
 	FOnGameplayEffectTagCountChanged OnGameplayEffectTagCountChanged;
 	//virtual void BroadcastDelegate() override;
 };
